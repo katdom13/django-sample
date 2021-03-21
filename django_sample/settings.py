@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "a72+yxe*l)3=ah3^@)sun(l-sc7v3a3wmd__x7klr8b-+nu_rs"
+SECRET_KEY = os.environ.get("DJANGO_BLOG_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -124,8 +124,8 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# MEDIA_URL = "/media/"
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
@@ -138,3 +138,23 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASS")
+
+AWS_ACCESS_KEY_ID = os.environ.get("DJANGO_BLOG_AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("DJANGO_BLOG_AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.environ.get("DJANGO_BLOG_AWS_STORAGE_BUCKET_NAME")
+
+AWS_S3_FILE_OVERRIDE = False  # Disable replacing of files
+AWS_DEFAULT_ACL = "public-read"  # Recommended
+
+PUBLIC_MEDIA_LOCATION = "media"
+AWS_S3_CUSTOM_DOMAIN = (
+    f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{PUBLIC_MEDIA_LOCATION}"
+)
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
+
+AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+
+AWS_S3_REGION_NAME = "ap-southeast-1"
+AWS_S3_SIGNATURE_VERSION = "s3v4"
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
